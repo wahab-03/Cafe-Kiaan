@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Check, CheckCircle2, Loader2, MapPinned } from "lucide-react";
@@ -89,7 +89,7 @@ function StatusTimeline({ status, orderType }) {
   );
 }
 
-export default function Success() {
+function SuccessContent() {
   const params = useSearchParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -210,5 +210,13 @@ export default function Success() {
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function Success() {
+  return (
+    <Suspense fallback={<><Header /><main className="min-h-[650px] bg-kiaan-cream" /><Footer /></>}>
+      <SuccessContent />
+    </Suspense>
   );
 }
