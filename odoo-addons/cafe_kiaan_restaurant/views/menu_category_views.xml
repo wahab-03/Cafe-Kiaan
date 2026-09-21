@@ -1,0 +1,59 @@
+<odoo>
+    <record id="view_cafe_menu_category_tree" model="ir.ui.view">
+        <field name="name">cafe.menu.category.tree</field>
+        <field name="model">cafe.menu.category</field>
+        <field name="arch" type="xml">
+            <tree string="Restaurant Menu" editable="bottom" create="true" delete="true">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_cafe_menu_category_form" model="ir.ui.view">
+        <field name="name">cafe.menu.category.form</field>
+        <field name="model">cafe.menu.category</field>
+        <field name="arch" type="xml">
+            <form string="Menu Section">
+                <header>
+                    <button name="action_archive" string="Archive" type="object" class="btn-secondary" invisible="not active"/>
+                    <button name="action_restore" string="Restore" type="object" class="btn-primary" invisible="active"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                    <group string="Products">
+                        <field name="product_ids" readonly="1">
+                            <tree create="false" edit="false" delete="false">
+                                <field name="name"/>
+                                <field name="list_price"/>
+                                <field name="cafe_available"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_cafe_menu_categories" model="ir.actions.act_window">
+        <field name="name">Menu Categories</field>
+        <field name="res_model">cafe.menu.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_cafe_menu_category_tree"/>
+        <field name="domain">[('active','=',True)]</field>
+        <field name="context">{'default_active': True}</field>
+    </record>
+    <record id="action_cafe_menu_categories_archived" model="ir.actions.act_window">
+        <field name="name">Archived Menu Sections</field>
+        <field name="res_model">cafe.menu.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_cafe_menu_category_tree"/>
+        <field name="domain">[('active','=',False)]</field>
+        <field name="context">{'default_active': False}</field>
+    </record>
+    <menuitem id="menu_cafe_menu_categories" name="Menu Categories" parent="menu_cafe_kiaan_root" action="action_cafe_menu_categories" sequence="5"/>
+    <menuitem id="menu_cafe_menu_categories_archived" name="Archived Menu Sections" parent="menu_cafe_kiaan_root" action="action_cafe_menu_categories_archived" sequence="6"/>
+</odoo>

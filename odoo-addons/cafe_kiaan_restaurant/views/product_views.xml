@@ -1,0 +1,28 @@
+<odoo>
+    <record id="view_product_template_cafe_kiaan_form" model="ir.ui.view">
+        <field name="name">product.template.form.cafe.kiaan</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="cafe_is_menu_item"/>
+                <field name="cafe_menu_category_id" invisible="not cafe_is_menu_item" domain="[('active', '=', True)]" options="{'no_create': True, 'no_create_edit': True}"/>
+                <field name="cafe_category" invisible="True"/>
+                <field name="cafe_available" invisible="not cafe_is_menu_item"/>
+                <field name="cafe_featured" invisible="not cafe_is_menu_item"/>
+                <field name="cafe_image_url" invisible="not cafe_is_menu_item"/>
+                <field name="cafe_description" invisible="not cafe_is_menu_item"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_cafe_menu_products" model="ir.actions.act_window">
+        <field name="name">Restaurant Menu Products</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('cafe_is_menu_item','=',True)]</field>
+        <field name="context">{'default_cafe_is_menu_item': True, 'default_sale_ok': True, 'cafe_restaurant_menu_context': True, 'group_by': ['cafe_menu_category_id']}</field>
+    </record>
+    <menuitem id="menu_cafe_kiaan_root" name="Café Kiaan" action="" sequence="85"/>
+    <menuitem id="menu_cafe_menu_products" name="Restaurant Menu Products" parent="menu_cafe_kiaan_root" action="action_cafe_menu_products" sequence="10"/>
+</odoo>

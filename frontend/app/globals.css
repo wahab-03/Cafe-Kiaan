@@ -1,0 +1,345 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: #231717;
+  background: #fff6f3;
+  font-family: "Poppins", Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.pattern {
+  background-image: radial-gradient(rgba(175, 5, 50, .09) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Orders button - rotating border + horizontal hover fill */
+.orders-nav-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(175, 5, 50, 0.35);
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #4b5563;
+  transition: color 0.35s ease, border-color 0.35s ease;
+}
+
+/* Keep the Orders text above the animation */
+.orders-nav-button>span {
+  position: relative;
+  z-index: 3;
+}
+
+/* Moving glowing dash around the border */
+.orders-nav-button::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 42px;
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      #ff2f72 20%,
+      #af0532 50%,
+      #ff2f72 80%,
+      transparent 100%);
+  box-shadow:
+    0 0 8px rgba(175, 5, 50, 0.95),
+    0 0 16px rgba(255, 47, 114, 0.85),
+    0 0 25px rgba(255, 47, 114, 0.55);
+
+  offset-path: inset(0 round 9999px);
+  offset-distance: 0%;
+  animation: orders-border-run 1.8s linear infinite;
+}
+
+/* Horizontal fill */
+.orders-nav-button::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
+  background: #af0532;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s ease;
+}
+
+/* Hover */
+.orders-nav-button:hover {
+  color: #ffffff;
+  border-color: #af0532;
+}
+
+.orders-nav-button:hover::before {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+.orders-nav-button:hover::after {
+  transform: scaleX(1);
+}
+
+/* Moving dash animation */
+@keyframes orders-border-run {
+  0% {
+    offset-distance: 0%;
+  }
+
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+
+
+
+
+
+
+
+
+.nav-link-underline {
+  position: relative;
+}
+
+.nav-link-underline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 0px;
+  height: 2px;
+  border-radius: 9999px;
+  background: #af0532;
+  transform: translateX(-50%);
+  transition: width 0.25s ease;
+}
+
+.nav-link-underline:hover::after {
+  width: 42px;
+}
+
+.signin-link .nav-link-underline::after {
+  bottom: -4px;
+}
+
+
+
+
+@keyframes steam {
+
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: translateY(-20px) scaleY(1.08);
+    opacity: 1;
+  }
+}
+
+/* Café Kiaan account form — video-style diagonal black/white split animation. */
+.account-card {
+  position: relative;
+  width: 100%;
+  min-height: 570px;
+  overflow: hidden;
+  border: 1px solid rgba(35, 23, 23, 0.28);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(42, 20, 28, 0.20);
+}
+.account-form-panel {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 52px 62px;
+  background: #fff;
+  transition: left .22s ease, opacity .20s ease, transform .20s ease;
+}
+.account-card.is-signup .account-form-panel {
+  left: 50%;
+}
+.account-form-content {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity .20s ease, transform .20s ease;
+}
+.account-card.is-signup .account-form-content {
+  transform: translateX(0);
+}
+.account-card.is-switching .account-form-panel,
+.account-card.is-switching .account-welcome-content {
+  opacity: 0;
+}
+.account-card.is-switching .account-form-content {
+  transform: translateX(0);
+}
+.account-welcome {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+  background: #690b2b;
+  color: #fff;
+  clip-path: polygon(34% 0, 100% 0, 100% 100%, 83% 100%);
+}
+.account-card.is-signup .account-welcome {
+  clip-path: polygon(0 0, 55% 0, 17% 100%, 0 100%);
+}
+.account-welcome::before,
+.account-welcome::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.account-welcome::before { width: 260px; height: 260px; right: -120px; top: -105px; }
+.account-welcome::after { width: 185px; height: 185px; left: -70px; bottom: -100px; }
+.account-welcome-content {
+  position: absolute;
+  left: 64%;
+  top: 2%;
+  width: 31%;
+  max-width: 360px;
+  padding-right: 2%;
+  transition: opacity .20s ease, transform .20s ease;
+}
+.account-card.is-signup .account-welcome-content {
+  left: 5%;
+  top: 2%;
+  width: 31%;
+  padding-right: 0;
+}
+.account-mark {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, .78);
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: 700;
+}
+.account-field {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 48px;
+  border-bottom: 2px solid #696062;
+  color: #690b2b;
+  transition: border-color .20s ease, transform .20s ease;
+}
+.account-field:focus-within {
+  border-color: #af0532;
+  transform: translateX(2px);
+}
+.account-field input,
+.account-field textarea {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #231717;
+  font-size: 14px;
+  resize: none;
+}
+.account-field textarea {
+  padding: 10px 0 7px;
+  line-height: 1.45;
+}
+.account-field input::placeholder,
+.account-field textarea::placeholder { color: #94898d; }
+.account-field button { color: #8b747b; }
+.account-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  background: #690b2b;
+  clip-path: polygon(34% 0, 100% 0, 100% 100%, 83% 100%);
+}
+.account-card.is-switching .account-transition {
+  opacity: 1;
+  animation: account-diagonal-forward 1.50s linear both;
+}
+.account-card.is-switching.is-reverse .account-transition {
+  clip-path: polygon(0 0, 65% 0, 17% 100%, 0 100%);
+  animation-name: account-diagonal-reverse;
+}
+@keyframes account-diagonal-forward {
+  0% { clip-path: polygon(34% 0, 100% 0, 100% 100%, 83% 100%); }
+  33% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+  67% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+  100% { clip-path: polygon(0 0, 65% 0, 17% 100%, 0 100%); }
+}
+@keyframes account-diagonal-reverse {
+  0% { clip-path: polygon(0 0, 65% 0, 17% 100%, 0 100%); }
+  33% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+  67% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+  100% { clip-path: polygon(34% 0, 100% 0, 100% 100%, 83% 100%); }
+}
+@media (max-width: 767px) {
+  .account-card { min-height: auto; }
+  .account-form-panel {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    min-height: 560px;
+    padding: 38px 24px 42px;
+  }
+  .account-card.is-signup .account-form-panel { left: 0; }
+  .account-welcome {
+    position: relative;
+    inset: auto;
+    min-height: 285px;
+    clip-path: polygon(0 0, 100% 0, 100% 82%, 0 100%);
+  }
+  .account-card.is-signup .account-welcome {
+    clip-path: polygon(0 0, 100% 0, 100% 82%, 0 100%);
+  }
+  .account-welcome-content,
+  .account-card.is-signup .account-welcome-content {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    max-width: none;
+    padding: 38px 28px 62px;
+  }
+  .account-transition { display: none; }
+  .account-card.is-switching .account-form-panel,
+  .account-card.is-switching .account-welcome-content { opacity: 1; }
+}

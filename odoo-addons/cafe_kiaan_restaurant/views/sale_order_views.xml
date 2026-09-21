@@ -1,0 +1,34 @@
+<odoo>
+    <record id="view_sale_order_cafe_kiaan_form" model="ir.ui.view">
+        <field name="name">sale.order.form.cafe.kiaan</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='client_order_ref']" position="after">
+                <field name="cafe_order"/>
+                <field name="cafe_order_type" invisible="not cafe_order"/>
+                <field name="cafe_payment_method" invisible="not cafe_order"/>
+                <field name="cafe_delivery_fee" invisible="not cafe_order"/>
+                <field name="cafe_customer_note" invisible="not cafe_order"/>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_cafe_confirm" string="Confirm Restaurant Order" type="object" class="oe_highlight" invisible="not cafe_order or cafe_status != 'PENDING'"/>
+                <button name="action_cafe_start_preparing" string="Start Preparing" type="object" class="oe_highlight" invisible="not cafe_order or cafe_status != 'CONFIRMED'"/>
+                <button name="action_cafe_mark_ready" string="Mark Ready" type="object" class="oe_highlight" invisible="not cafe_order or cafe_status != 'PREPARING'"/>
+                <button name="action_cafe_dispatch" string="Out for Delivery" type="object" class="oe_highlight" invisible="not cafe_order or cafe_status != 'READY' or cafe_order_type != 'delivery'"/>
+                <button name="action_cafe_complete" string="Complete" type="object" class="oe_highlight" invisible="not cafe_order or (cafe_status != 'READY' and cafe_status != 'OUT_FOR_DELIVERY')"/>
+                <button name="action_cafe_cancel" string="Cancel Restaurant Order" type="object" invisible="not cafe_order or cafe_status in ['COMPLETED','CANCELLED']"/>
+                <field name="cafe_status" widget="statusbar" statusbar_visible="PENDING,CONFIRMED,PREPARING,READY,OUT_FOR_DELIVERY,COMPLETED" invisible="not cafe_order"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_cafe_restaurant_orders" model="ir.actions.act_window">
+        <field name="name">Restaurant Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cafe_order','=',True)]</field>
+        <field name="context">{'default_cafe_order': True}</field>
+    </record>
+    <menuitem id="menu_cafe_restaurant_orders" name="Restaurant Orders" parent="menu_cafe_kiaan_root" action="action_cafe_restaurant_orders" sequence="80"/>
+</odoo>

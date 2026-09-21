@@ -1,0 +1,7 @@
+<odoo>
+    <!-- Bind only the Café Kiaan confirmation template to the Café Kiaan notification layout.
+         This updates email_layout_xmlid and leaves the existing template body/content intact. -->
+    <record id="mail_template_cafe_order_confirmation" model="mail.template">
+        <field name="email_layout_xmlid">cafe_kiaan_restaurant.cafe_kiaan_mail_notification_layout_v4</field>
+    </record>
+</odoo>

@@ -1,0 +1,6 @@
+<odoo>
+    <!-- Remove invalid legacy email layout views left by earlier module versions. -->
+    <delete model="ir.ui.view" id="cafe_kiaan_mail_notification_layout_v2"/>
+    <delete model="ir.ui.view" id="cafe_kiaan_mail_notification_layout_v3"/>
+    <function model="ir.actions.act_window" name="cafe_cleanup_legacy_actions"/>
+</odoo>

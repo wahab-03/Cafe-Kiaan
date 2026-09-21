@@ -1,0 +1,126 @@
+<odoo>
+    <data noupdate="1">
+        <record id="mail_template_cafe_order_confirmation" model="mail.template">
+            <field name="name">Café Kiaan: Order Confirmation</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Café Kiaan Order (Ref {{ object.name or 'n/a' }})</field>
+            <field name="email_from">{{ (object.user_id.email_formatted or object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to" eval="False"/>
+            <field name="use_default_to" eval="True"/>
+            <field name="description">Customer confirmation email used for Café Kiaan restaurant orders.</field>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0; font-family:Arial,Helvetica,sans-serif; color:#333333;">
+                    <p style="margin:0; padding:0; font-size:14px; line-height:1.6;">
+                        Hello,
+                        <br/><br/>
+                        Your order <strong t-out="object.name or ''">S00000</strong> amounting to
+                        <strong t-out="object._cafe_email_amount_bdt_formatted()">৳ 0.00</strong>
+                        has been confirmed.
+                        <br/>
+                        Thank you for your trust!
+                        <br/><br/>
+                        Do not hesitate to contact us if you have any questions.
+                    </p>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('sale.action_report_saleorder'))]"/>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Café Kiaan email layout: standalone to avoid fragile XPath inheritance.
+             It preserves Odoo's normal notification structure but removes the logo and
+             keeps the entire email canvas left-aligned. -->
+        <template id="cafe_kiaan_mail_notification_layout_v4"
+                  name="Café Kiaan Mail Notification Layout (No Logo, BDT, Left Aligned)">
+            <html t-att-lang="lang">
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html charset=UTF-8"/>
+                </head>
+                <body style="font-family:Verdana, Arial,sans-serif; color:#454748; margin:0; padding:0; text-align:left;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="width:100%; margin:0; padding:0; border-collapse:collapse; text-align:left;">
+                        <tbody>
+                            <tr>
+                                <td align="left" style="width:100%; margin:0; padding:0; text-align:left; vertical-align:top;">
+                                    <div style="width:100%; max-width:none; margin:0; padding:0; text-align:left;">
+                                        <t t-if="has_button_access or actions or subtitles or not is_discussion">
+                                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" align="left" style="width:100%; margin-top:5px; border-collapse:collapse; text-align:left;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td valign="center" style="padding:0; text-align:left;">
+                                                            <table cellspacing="0" cellpadding="0" border="0" align="left" style="border-collapse:collapse; text-align:left;">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td t-if="has_button_access" t-att-style="'border-radius:3px; text-align:center; background:' + (company.email_secondary_color or '#875A7B') + ';'">
+                                                                            <a t-att-href="button_access['url']" style="font-size:12px; color:#FFFFFF; display:block; padding:8px 12px 11px; text-decoration:none !important; font-weight:400;">
+                                                                                <t t-out="button_access['title']"/>
+                                                                            </a>
+                                                                        </td>
+                                                                        <td t-if="has_button_access">&amp;nbsp;&amp;nbsp;</td>
+                                                                        <td t-if="actions">
+                                                                            <t t-foreach="actions" t-as="action">
+                                                                                <a t-att-href="action['url']" t-att-style="'font-size:12px; color:' + (company.email_secondary_color or '#875A7B') + '; text-decoration:none !important;'">
+                                                                                    <t t-out="action['title']"/>
+                                                                                </a>
+                                                                                &amp;nbsp;&amp;nbsp;
+                                                                            </t>
+                                                                        </td>
+                                                                        <td style="font-size:12px; text-align:left;">
+                                                                            <span style="font-weight:bold;" t-out="record.name or record.display_name"/>
+                                                                        </td>
+                                                                        <td style="font-size:12px; white-space:nowrap; text-align:left;">
+                                                                            <span style="margin-left:14px; font-weight:bold; white-space:nowrap;">
+                                                                                <t t-out="record._cafe_email_amount_bdt_formatted()">BDT 0.00</t>
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td valign="center" style="padding:0; text-align:left;">
+                                                            <hr width="100%" style="background-color:rgb(204,204,204); border:medium none; clear:both; display:block; font-size:0px; min-height:1px; line-height:0; margin:10px 0px;"/>
+                                                            <p t-if="subtype_internal" style="background-color:#f2dede; padding:5px; margin-bottom:16px; font-size:13px;">
+                                                                <strong>Internal communication</strong>: Replying will post an internal note. Followers won't receive any email notification.
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </t>
+                                        <div t-out="message.body" style="font-size:13px; text-align:left;"/>
+                                        <ul t-if="tracking_values" style="text-align:left; padding-left:20px;">
+                                            <t t-foreach="tracking_values" t-as="tracking">
+                                                <li><t t-out="tracking[0]"/>: <t t-out="tracking[1]"/> &#8594; <t t-out="tracking[2]"/></li>
+                                            </t>
+                                        </ul>
+                                        <t class="o_signature">
+                                            <div t-if="email_add_signature and not is_html_empty(signature)" t-out="signature" style="font-size:13px; text-align:left;"/>
+                                        </t>
+                                        <div style="margin-top:32px; text-align:left;">
+                                            <hr width="100%" style="background-color:rgb(204,204,204); border:medium none; clear:both; display:block; font-size:0px; min-height:1px; line-height:0; margin:16px 0px 4px 0px;"/>
+                                            <b t-out="company.name" style="font-size:11px;"/><br/>
+                                            <p style="color:#999999; margin-top:2px; font-size:11px; text-align:left;">
+                                                <t t-out="company.phone"/>
+                                                <t t-if="company.email and company.phone"> |</t>
+                                                <a t-if="company.email" t-att-href="'mailto:%s' % company.email" style="text-decoration:none; color:#999999;" t-out="company.email"/>
+                                                <t t-if="company.website and (company.phone or company.email)"> |</t>
+                                                <a t-if="company.website" t-att-href="'%s' % company.website" style="text-decoration:none; color:#999999;" t-out="company.website"/>
+                                            </p>
+                                        </div>
+                                        <div style="color:#555555; font-size:11px; text-align:left;">
+                                            Powered by <a target="_blank" href="https://www.odoo.com?utm_source=db&amp;utm_medium=email" t-att-style="'color:' + (company.email_secondary_color or '#875A7B') + ';'">Odoo</a>
+                                            <span id="mail_unfollow">
+                                                | <a href="/mail/unfollow" style="text-decoration:none; color:#555555;">Unfollow</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </body>
+            </html>
+        </template>
+    </data>
+</odoo>

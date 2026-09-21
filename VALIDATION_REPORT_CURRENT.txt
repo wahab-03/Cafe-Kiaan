@@ -1,0 +1,35 @@
+Café Kiaan current project validation — based on the latest authoritative Test.zip and the continued fixes requested after the supplied reference video.
+
+Completed static checks:
+- Odoo Python compile/AST validation: PASS
+- All Café Kiaan XML well-formed: PASS
+- Selected frontend JSX/JS syntax transpile validation: PASS
+- Account flow fields: Full name + Phone + Email + Password + Delivery Address: PASS
+- Duplicate Confirm Password field removed: PASS
+- Reference-style diagonal sign-in/sign-up animation geometry and forward/reverse transitions: PASS
+- Sign-up customer address is persisted to the Odoo res.partner record: PASS
+- Next.js API rewrite preserved; server-side API origin normalized to 127.0.0.1 for local Windows stability: PASS
+- Hero slideshow removed; static hero image is hero-bg-2.png: PASS
+- Header logo uses the real logo-png.png asset and is positioned slightly lower: PASS
+- START_ODOO.ps1 Windows process arguments with Program Files paths are explicitly quoted: PASS
+- Odoo launcher health probe targets 127.0.0.1:8070: PASS
+- Odoo order sound service and bus notification remain present: PASS
+- Persistent menu category / sequence / archive / hard-delete behavior remains present: PASS
+- ZIP package cleanup performed (node_modules/.next/cache/runtime junk excluded): PASS
+
+Reference animation verification:
+- The supplied 30 fps / 8.93 s reference video was inspected at the transition phases.
+- The prototype was executed in a real Chromium run with the sign-up transition triggered by a click.
+- The measured transition was matched to the reference's phases: current split -> full maroon/black cover -> reverse white diagonal reveal -> final sign-up split.
+
+Build/runtime limitation:
+- The sandbox could not complete a full npm install/build run within its execution window; the user's Windows environment successfully ran npm ci and Next.js 14.2.20 in the provided terminal output.
+- The user's Windows Odoo/PostgreSQL/browser environment is not directly accessible from this sandbox, so live Odoo/database/browser end-to-end testing was not performed here.
+
+Windows runtime verification:
+- Run START_ODOO.bat and wait for: [OK] Odoo HTTP API is ready on http://localhost:8070
+- Then run START_FRONTEND.bat -> http://localhost:3000
+- Open /account and click Create an Account; verify the diagonal transition and the five sign-up fields.
+- Create an account with an address, then open checkout; verify name/phone/email/address are already populated.
+- Open /menu and verify the menu loads after Odoo is healthy.
+- Verify the homepage hero uses hero-bg-2.png as a single static image.

@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.env
+.env.local
+odoo-local-data/
+*.pyc
+__pycache__/
+odoo-runtime/
+*.log
+*.backup
+*.dump
