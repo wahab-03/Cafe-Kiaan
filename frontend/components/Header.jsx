@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import Logo from "./Logo";
 import { FacebookIcon, InstagramIcon } from "./SocialIcons";
+import { api } from "../lib/api";
 
 const navLinks = [
   ["HOME", "home"],
@@ -24,6 +25,8 @@ export default function Header() {
   const { count } = useCart();
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     try {
@@ -37,20 +40,44 @@ export default function Header() {
 
   function closeMenu() {
     setOpen(false);
+    setProfileOpen(false);
+  }
+
+  async function logout() {
+    let token = "";
+    try {
+      const saved = localStorage.getItem("kiaan-customer");
+      const parsed = saved ? JSON.parse(saved) : null;
+      token = parsed?.customerToken || "";
+    } catch {
+      token = "";
+    }
+
+    setLoggingOut(true);
+    try {
+      if (token) await api.accountLogout(token);
+    } catch {
+    } finally {
+      localStorage.removeItem("kiaan-customer");
+      setCustomer(null);
+      setOpen(false);
+      setProfileOpen(false);
+      setLoggingOut(false);
+      window.location.assign("/");
+    }
   }
 
   return (
     <header id="home">
-      {/* TOP ANNOUNCEMENT BAR - NOT STICKY */}
       <div className="bg-kiaan-pink text-white">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-2.5 text-base">
+        <div className="site-container flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-2.5 text-xs sm:text-sm lg:text-base">
           <span className="flex items-center gap-2">
-            <Clock3 size={16} />
-            We are open everyday 11:00 AM – 09:00 PM
+            <Clock3 size={16} className="shrink-0" />
+            Open daily 11:00 AM – 08:00 PM
           </span>
 
           <div className="flex items-center gap-3">
-            <span className="hidden text-white/85 sm:block">
+            <span className="hidden text-white/85 lg:block">
               Fresh food • Warm moments
             </span>
 
@@ -77,40 +104,34 @@ export default function Header() {
         </div>
       </div>
 
-      {/* NAV + LOGO AREA */}
       <div className="relative">
-        {/* LOGO */}
         <div className="pointer-events-none absolute inset-x-0 top-[4px] z-[60]">
-          <div className="mx-auto max-w-[1600px] px-4 sm:px-6">
-            <div className="pointer-events-none w-[120px]">
+          <div className="site-container">
+            <div className="pointer-events-none w-[88px] sm:w-[120px]">
               <Link
                 href="/"
                 onClick={() => setOpen(false)}
                 aria-label="Café Kiaan home"
-                className="pointer-events-auto relative block px-2 pb-4 pt-6"
+                className="pointer-events-auto relative flex justify-center px-2 pb-3 pt-3 sm:pb-4 sm:pt-6"
               >
-                {/* Logo-এর নিচের curved shape */}
                 <span
-                  className="absolute left-1/2 top-0 -z-10 h-[105px] w-[155px] -translate-x-1/2 bg-[#FFF9F6]"
+                  className="absolute left-1/2 top-0 -z-10 h-[108px] w-[120px] sm:h-[159px] sm:w-[220px] -translate-x-1/2 bg-[#FFF9F6]"
                   style={{
-                    borderRadius: "0 0 50% 50% / 0 0 42px 42px",
+                    borderRadius: "0 0 50% 50% / 0 0 65px 65px",
                   }}
                 />
 
-                <Logo className="relative z-10 h-28 w-auto scale-150" />
+                <Logo className="relative z-10 h-20 w-auto sm:h-24 sm:scale-125" />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* ONLY NAVIGATION IS STICKY */}
         <div className="sticky top-0 z-50 border-b border-[#EDE2DC] bg-[#FFF9F6]">
-          <nav className="mx-auto flex h-[92px] max-w-[1600px] items-center justify-between px-4 py-3">
-            {/* Logo-এর জায়গা ধরে রাখবে */}
-            <div className="w-[120px] shrink-0" aria-hidden="true" />
+          <nav className="site-container flex h-[96px] items-center justify-between gap-4 py-3 sm:h-[122px]">
+            <div className="w-[88px] shrink-0 sm:w-[150px]" aria-hidden="true" />
 
-            {/* DESKTOP NAVIGATION */}
-            <ul className="hidden items-center gap-7 text-[16px] font-semibold tracking-wide lg:flex">
+            <ul className="hidden shrink-0 items-center gap-5 whitespace-nowrap text-sm font-semibold tracking-wide xl:flex 2xl:gap-9 2xl:text-base">
               {navLinks.map(([label, id]) => (
                 <li key={label}>
                   {id === "menu" ? (
@@ -146,33 +167,76 @@ export default function Header() {
               ))}
             </ul>
 
-            {/* RIGHT SIDE */}
-            <div className="flex items-center gap-3">
-              <Link
-                href="/account?next=/orders"
-                className="signin-link hidden rounded-full px-3 py-2 text-base font-semibold text-gray-600 transition-colors hover:text-kiaan-pink sm:block"
-              >
-                <span className="nav-link-underline">
-                  {customer?.name
-                    ? `Hi, ${customer.name.split(" ")[0]}`
-                    : "Sign In"}
-                </span>
-              </Link>
+            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap 2xl:gap-5">
+              {customer?.name ? (
+                <div
+                  className="relative hidden md:block"
+                  onMouseEnter={() => setProfileOpen(true)}
+                  onMouseLeave={() => setProfileOpen(false)}
+                >
+                  <button
+                    type="button"
+                    className="signin-link max-w-[140px] truncate rounded-full px-3 py-2 text-base font-semibold text-gray-600 transition-colors hover:text-kiaan-pink"
+                    aria-haspopup="menu"
+                    aria-expanded={profileOpen}
+                    onClick={() => setProfileOpen((value) => !value)}
+                  >
+                    <span className="nav-link-underline">
+                      {`Hi, ${customer.name.split(" ")[0]}`}
+                    </span>
+                  </button>
+
+                  {profileOpen && (
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-full z-[80] mt-1 min-w-[180px] rounded-xl border border-[#EDE2DC] bg-white p-1.5 shadow-xl"
+                    >
+                      <Link
+                        role="menuitem"
+                        href="/account?next=/orders"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-kiaan-soft hover:text-kiaan-pink"
+                      >
+                        My Account
+                      </Link>
+                      <button
+                        role="menuitem"
+                        type="button"
+                        disabled={loggingOut}
+                        onClick={logout}
+                        className="block w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-gray-700 hover:bg-kiaan-soft hover:text-kiaan-pink disabled:opacity-60"
+                      >
+                        {loggingOut ? "Logging out…" : "Log Out"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/account?next=/orders"
+                  className="signin-link hidden rounded-full px-3 py-2 text-base font-semibold text-gray-600 transition-colors hover:text-kiaan-pink md:block"
+                >
+                  <span className="nav-link-underline">Sign In</span>
+                </Link>
+              )}
 
               <Link
                 href="/orders"
-                className="orders-nav-button hidden rounded-full px-3.5 py-2 text-base font-semibold text-gray-600 sm:block lg:block"
+                className="orders-nav-button hidden rounded-full px-3.5 py-2 text-base font-semibold text-gray-600 md:block"
               >
                 <span>Orders</span>
               </Link>
 
               <Link
                 href="/cart"
-                className="relative flex items-center gap-1.5 rounded-full border border-pink-100 px-3.5 py-2 text-base font-medium transition-colors hover:border-kiaan-pink hover:text-kiaan-pink"
+                className="relative flex items-center gap-1.5 rounded-full border border-kiaan-line px-3.5 py-2 text-base font-medium transition-colors hover:border-kiaan-pink hover:text-kiaan-pink"
                 aria-label="View cart"
               >
                 <ShoppingCart size={16} />
-                <span>{count > 0 ? `Cart ${count}` : "Cart"}</span>
+                <span >Cart</span>
+                <span className="grid size-[22px] place-items-center rounded-full bg-[#3F6B4E] text-xs font-semibold leading-none text-white">
+                  {count}
+                </span>
               </Link>
 
               <Link
@@ -183,7 +247,7 @@ export default function Header() {
               </Link>
 
               <button
-                className="text-kiaan-pink lg:hidden"
+                className="text-kiaan-pink xl:hidden"
                 onClick={() => setOpen((v) => !v)}
                 aria-label={open ? "Close menu" : "Open menu"}
                 aria-expanded={open}
@@ -193,9 +257,8 @@ export default function Header() {
             </div>
           </nav>
 
-          {/* MOBILE MENU */}
           {open && (
-            <div className="border-t border-[#EDE2DC] bg-[#FFF9F6] px-4 py-4 lg:hidden">
+            <div className="site-container border-t border-[#EDE2DC] bg-[#FFF9F6] pb-4 pt-8 sm:pt-12 xl:hidden">
               <div className="space-y-1 text-sm font-semibold">
                 <Link
                   className="block rounded-md px-2 py-2 hover:bg-kiaan-soft"
@@ -239,6 +302,17 @@ export default function Header() {
                     : "SIGN IN"}
                 </Link>
 
+                {customer?.name && (
+                  <button
+                    type="button"
+                    className="block w-full rounded-md px-2 py-2 text-left hover:bg-kiaan-soft"
+                    onClick={logout}
+                    disabled={loggingOut}
+                  >
+                    {loggingOut ? "LOGGING OUT…" : "LOG OUT"}
+                  </button>
+                )}
+
                 <Link
                   className="block rounded-md px-2 py-2 hover:bg-kiaan-soft"
                   href="/orders"
@@ -252,7 +326,7 @@ export default function Header() {
                   href="/cart"
                   onClick={closeMenu}
                 >
-                  {count > 0 ? `CART (${count})` : "CART"}
+                  {`CART (${count})`}
                 </Link>
 
                 <Link
